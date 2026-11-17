@@ -1,63 +1,66 @@
+
 <?php
-// public/clientes.php
+
+header('Content-Type: application/json; charset=utf-8');
 
 require_once __DIR__ . '/../config/config.php';
-require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../controllers/ClienteController.php';
+require_once __DIR__ . '/../includes/controllers/clienteController.php';
 
-$clienteController = new ClienteController($pdo);
+try {
+    $clienteController = new ClienteController($pdo);
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $clienteController->cadastrar($_POST);
-    header("Location: clientes.php");
-    exit;
+    // LISTAR CLIENTES
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+        echo json_encode($clienteController->listarAtivos());
+        exit;
+    }
+
+    // RECEBER DADOS
+    $dados = json_decode(file_get_contents('php://input'), true);
+
+    // CADASTRAR CLIENTE
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if (!is_array($dados)) {
+            http_response_code(400);
+            echo json_encode(['erro' => 'Dados inválidos.']);
+            exit;
+        }
+
+        $clienteController->cadastrar($dados);
+
+        echo json_encode([
+            'sucesso' => true,
+            'mensagem' => 'Cliente cadastrado com sucesso!'
+        ]);
+        exit;
+    }
+
+    // EXCLUIR CLIENTE
+    if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
+        $id = filter_var($dados['id'] ?? null, FILTER_VALIDATE_INT);
+
+        if (!$id) {
+            http_response_code(400);
+            echo json_encode(['erro' => 'ID inválido.']);
+            exit;
+        }
+
+        $clienteController->desativar($id);
+
+        echo json_encode([
+            'sucesso' => true,
+            'mensagem' => 'Cliente excluído com sucesso!'
+        ]);
+        exit;
+    }
+
+    http_response_code(405);
+    echo json_encode(['erro' => 'Método não permitido.']);
+
+} catch (Throwable $e) {
+    http_response_code(500);
+    echo json_encode([
+        'erro' => 'Erro ao processar a solicitação.',
+        'detalhe' => $e->getMessage()
+    ]);
 }
-
-$clientes = $clienteController->listarAtivos();
-
-require_once __DIR__ . '/../includes/header.php';
-?>
-
-<h2>Cadastrar Cliente na Rota Fixa</h2>
-
-<form method="POST" class="form-grid">
-    <input type="text" name="nome" placeholder="Nome do Cliente" required>
-    <input type="text" name="telefone" placeholder="Telefone / WhatsApp">
-    <input type="text" name="endereco" placeholder="Endereço">
-    <input type="text" name="cidade" placeholder="Cidade">
-    <input type="number" name="dia_fixo_atendimento" min="1" max="31" placeholder="Dia fixo (1 a 31)" required>
-    <select name="regra_fim_de_semana">
-        <option value="PROXIMA_SEGUNDA">Se cair no FDS: Próxima Segunda</option>
-        <option value="SEXTA_ANTERIOR">Se cair no FDS: Sexta Anterior</option>
-        <option value="MANTER">Manter no FDS</option>
-    </select>
-    <button type="submit">Salvar Cliente</button>
-</form>
-
-<h3>Clientes Ativos</h3>
-<table>
-    <thead>
-        <tr>
-            <th>Dia Fixo</th>
-            <th>Cliente</th>
-            <th>Telefone</th>
-            <th>Cidade</th>
-            <th>Regra FDS</th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php foreach ($clientes as $c): ?>
-            <tr>
-                <td><strong>Todo dia <?= $c['dia_fixo_atendimento'] ?></strong></td>
-                <td><?= htmlspecialchars($c['nome']) ?></td>
-                <td><?= htmlspecialchars($c['telefone']) ?></td>
-                <td><?= htmlspecialchars($c['cidade']) ?></td>
-                <td><?= htmlspecialchars($c['regra_fim_de_semana']) ?></td>
-            </tr>
-        <?php endforeach; ?>
-    </tbody>
-</table>
-
-    </main>
-</body>
-</html>

@@ -8,7 +8,7 @@ require_once __DIR__ . '/../controllers/RotaController.php';
 $ano = isset($_GET['ano']) ? (int)$_GET['ano'] : (int)date('Y');
 $mes = isset($_GET['mes']) ? (int)$_GET['mes'] : (int)date('n');
 
-$rotaController = new RotaController($pdo);
+$rotaController = new RoutesController($pdo);
 $resultado = $rotaController->gerarRotasMensais($ano, $mes);
 
 header('Content-Type: application/json; charset=utf-8');

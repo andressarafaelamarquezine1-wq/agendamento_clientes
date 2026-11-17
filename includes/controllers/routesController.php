@@ -1,9 +1,9 @@
 <?php
 
 require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../includes/funcoes_datas.php';
+require_once __DIR__ . '/../includes/functions_datas.php';
 
-class RotaController 
+class RoutesController 
 {
     private $pdo;
 

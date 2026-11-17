@@ -3,9 +3,9 @@
 
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../controllers/RotaController.php';
+require_once __DIR__ . '/../controllers/RoutesController.php';
 
-$rotaController = new RotaController($pdo);
+$rotaController = new RoutesController($pdo);
 
 $anoAtual = (int) date('Y');
 $mesAtual = (int) date('n');

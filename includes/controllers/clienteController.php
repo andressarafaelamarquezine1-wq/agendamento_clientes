@@ -36,4 +36,27 @@ class ClienteController
         $stmt = $this->pdo->prepare("UPDATE clientes SET ativo = 0 WHERE id = :id");
         return $stmt->execute([':id' => $id]);
     }
+    public function editar(int $id, array $dados): bool
+{
+    $sql = "UPDATE clientes SET
+                nome = :nome,
+                telefone = :telefone,
+                endereco = :endereco,
+                cidade = :cidade,
+                dia_fixo_atendimento = :dia_fixo,
+                regra_fim_de_semana = :regra
+            WHERE id = :id AND ativo = 1";
+
+    $stmt = $this->pdo->prepare($sql);
+
+    return $stmt->execute([
+        ':nome'     => trim($dados['nome']),
+        ':telefone' => trim($dados['telefone'] ?? ''),
+        ':endereco' => trim($dados['endereco'] ?? ''),
+        ':cidade'   => trim($dados['cidade'] ?? ''),
+        ':dia_fixo' => (int) $dados['dia_fixo_atendimento'],
+        ':regra'    => $dados['regra_fim_de_semana'] ?? 'PROXIMA_SEGUNDA',
+        ':id'       => $id,
+    ]);
+}
 }

@@ -13,8 +13,8 @@
         <strong>Controle de Rotas</strong>
         <div>
             <a href="index.php">Rotas do Dia</a>
-            <a href="clientes.php">Clientes</a>
-            <a href="gerar_rotas.php?ano=<?= date('Y') ?>&mes=<?= date('n') ?>" target="_blank">Gerar Mês Atual</a>
+            <a href="clients.php">Clientes</a>
+            <a href="generate_routes.php?ano=<?= date('Y') ?>&mes=<?= date('n') ?>" target="_blank">Gerar Mês Atual</a>
         </div>
     </nav>
     <main class="container">
